@@ -1,0 +1,48 @@
+influx:
+  url:    "http://influxdb:8086"
+  token:  "super-secret-token"
+  org:    "boat"
+  bucket: "bucket"
+
+
+gps:
+  device: "/dev/ttyACM0" # TODO: udev
+  device_type: "ublox"
+  baud: 9600
+  log_period: 1
+  debug: True
+
+
+gatt:
+  devices:
+    - name: "gatt_device"
+      type: "jbd"
+      mac:  "MAC_ADDRESS"
+      notify_uuid: 0000ff01-0000-1000-8000-00805f9b34fb
+      write_uuid:  0000ff02-0000-1000-8000-00805f9b34fb
+      log_period: 10   # seconds
+      debug: False     # prints all datafields to terminal
+      fields:
+        - voltage
+        - current
+        - power
+        - soc
+        - avg_cell_voltage
+        - cycles
+        - remaining_capacity_ah
+        - nominal_capacity_ah
+        - temperature_*
+
+victron:
+  devices:
+    - name: "victron_device"
+      mac:  "MAC_ADDRESS"
+      key:  "KEY"
+      log_period: 10
+      debug: False
+      fields:
+        - battery_voltage
+        - battery_charging_current
+        - solar_power
+        - yield_today
+        - charge_state

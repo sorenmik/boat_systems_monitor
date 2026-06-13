@@ -1,0 +1,72 @@
+services:
+
+  influxdb:
+    image: influxdb:2
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: adminpassword
+      DOCKER_INFLUXDB_INIT_ORG: boat
+      DOCKER_INFLUXDB_INIT_BUCKET: energy
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: super-secret-token
+    restart: unless-stopped
+
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+
+  # Data from NMEA GPS
+  gps:
+    build: ./gps
+    container_name: gps
+    privileged: true
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+
+
+  # Data from gatt devices (no-name BMS systems)
+  gatt:
+    build: ./gatt
+    container_name: gatt
+    privileged: true
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - /run/dbus:/run/dbus
+
+
+  # Data from Victron devices
+  victron-ble:
+    build: ./victron-ble
+    container_name: victron-ble
+    privileged: true
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - /run/dbus:/run/dbus
+
+
+volumes:
+  influxdb_data:
+  grafana_data:

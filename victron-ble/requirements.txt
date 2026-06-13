@@ -1,0 +1,4 @@
+victron_ble
+bleak
+pyyaml
+influxdb-client
